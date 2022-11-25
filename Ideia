@@ -1,0 +1,26 @@
+1. Ordenar o arquivo desconsiderados.txt
+2. Criar uma árvore B+ com as palavras dos outros arquivos.
+2.1. Cada nó da árvore será uma struct Palavra definida assim:
+
+struct{
+char info[];
+Dado dado[];
+}typdef Palavra
+
+struct{
+int arquivo;
+int frequencia;
+}typedef Dado
+
+Palavra guardará tanto a string encontrada em cada arquivo, bem como o arquivo e a frequência em Dado.
+
+3.Processo de leitura:
+3.1 Lê uma palavra em um dos arquivos de entrada;
+3.2 Usa busca binária para verificar se a palavra está nos ignorados
+3.3 Se não tiver, insire na árvore;
+3.3.1 Se já existir um nó com a mesma info da nova palavra, então atualiza o vetor dado, colocando o arquivo e incrementando a frequência.
+
+4. Quando todas as palavras tiverem sido lidas. Escreve a árvore B+ no arquivo final.
+4.1 É preciso ordenar o array de Dado
+
+5. Para fazer a consulta, basta usar busca binária no arquivo de índices ou na própria árvore.
