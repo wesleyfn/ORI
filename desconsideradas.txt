@@ -11,6 +11,6 @@ no
 em
 nao
 um
-uns
+uns 
 uma
 umas
