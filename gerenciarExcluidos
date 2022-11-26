@@ -1,0 +1,106 @@
+#ifndef GERENCIAREXCLUIDOS_H_INCLUDED
+#define GERENCIAREXCLUIDOS_H_INCLUDED
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define STR_MAX 500
+
+struct node
+{
+    char info[STR_MAX];
+
+    struct node *esquerda, *direita;
+};
+
+typedef struct node Node;
+
+Node* criarNo(char[STR_MAX]); //cria um n� para �rvore.
+Node * inserir(Node *, char[STR_MAX]); //insere um n� na �rvore bin�ria
+void taNaArvore(Node*,char[STR_MAX], int*); //se a string procurada estiver na �rvore, o terceiro argumento fica 1.
+
+void deletarArvore(Node*); //deleta a �rvore.
+void inOrder(Node*); //print InOrder.
+
+Node * inserir(Node *raiz, char info[STR_MAX])
+{
+    if(raiz == NULL)
+        return criarNo(info);
+
+    int cmp = strcmp(raiz->info, info);
+    if(cmp > 0)
+    {
+        raiz->direita = inserir(raiz->direita, info);
+    }
+    else if(cmp < 0)
+    {
+        raiz->esquerda = inserir(raiz->esquerda, info);
+    }
+
+    return raiz;
+}
+
+Node* criarNo(char info[STR_MAX])
+{
+    Node *buffer = (Node*)malloc(sizeof(Node));
+
+    int a = 0;
+    for(; info[a] != '\n' && info[a] < STR_MAX-1; ++a)
+    {
+        buffer->info[a] = info[a];
+    }
+    buffer->info[a] = '\0';
+
+    strcmp(buffer->info, info);
+
+    buffer->esquerda = NULL;
+    buffer->direita = NULL;
+
+    return buffer;
+}
+
+void deletarArvore(Node *raiz)
+{
+    if(raiz != NULL)
+    {
+        deletarArvore(raiz->esquerda);
+        deletarArvore(raiz->direita);
+        free(raiz);
+    }
+}
+
+void inOrder(Node *raiz)
+{
+    if(raiz != NULL)
+    {
+        inOrder(raiz->esquerda);
+        printf("%s\n",raiz->info);
+        inOrder(raiz->direita);
+    }
+}
+
+void taNaArvore(Node *raiz,char info[STR_MAX], int *resposta)
+{
+    if(raiz != NULL)
+    {
+        int cmp = strcmp(raiz->info, info);
+
+        if(cmp < 0)
+        {
+           taNaArvore(raiz->direita, info, resposta);
+        }
+        if(cmp > 0)
+        {
+            taNaArvore(raiz->direita, info, resposta);
+        }
+
+        if(cmp == 0)
+        {
+            *resposta = 1;
+            return;
+        }
+    }
+}
+
+#endif // GERENCIAREXCLUIDOS_H_INCLUDED
