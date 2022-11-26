@@ -1,0 +1,27 @@
+#include "gerenciarExcluidos.h"
+
+int main(void)
+{
+    FILE *arq = fopen("a.txt","r+");
+    char buff[STR_MAX];
+    int tem = 0;
+    Node *raiz = NULL;
+
+    fgets(buff,STR_MAX,arq);
+  raiz = criarNo(buff);
+
+    while(fgets(buff,500,arq))
+    {
+        inserir(raiz,buff);
+    }
+
+   inOrder(raiz);
+   char *buffer = "borboletinha ta na cozinha kkk";
+    taNaArvore(raiz,buffer,&tem);
+    printf("%d",tem);
+    deletarArvore(raiz);
+    fclose(arq);
+
+    return 0;
+}
+
