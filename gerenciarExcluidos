@@ -16,12 +16,13 @@ struct node
 
 typedef struct node Node;
 
-Node* criarNo(char[STR_MAX]); //cria um n� para �rvore.
-Node * inserir(Node *, char[STR_MAX]); //insere um n� na �rvore bin�ria
-void taNaArvore(Node*,char[STR_MAX], int*); //se a string procurada estiver na �rvore, o terceiro argumento fica 1.
+Node* criarNo(char[STR_MAX]); //cria um no para arvore.
+Node * inserir(Node *, char[STR_MAX]); //insere um no na arvore binaria
+void taNaArvore(Node*,char[STR_MAX], int*); //se a string procurada estiver na arvore, o terceiro argumento fica 1.
 
-void deletarArvore(Node*); //deleta a �rvore.
+void deletarArvore(Node*); //deleta a arvore.
 void inOrder(Node*); //print InOrder.
+void preOrder(Node*);
 
 Node * inserir(Node *raiz, char info[STR_MAX])
 {
@@ -31,11 +32,11 @@ Node * inserir(Node *raiz, char info[STR_MAX])
     int cmp = strcmp(raiz->info, info);
     if(cmp > 0)
     {
-        raiz->direita = inserir(raiz->direita, info);
+        raiz->esquerda = inserir(raiz->esquerda, info);
     }
     else if(cmp < 0)
     {
-        raiz->esquerda = inserir(raiz->esquerda, info);
+        raiz->direita = inserir(raiz->direita, info);
     }
 
     return raiz;
@@ -68,6 +69,16 @@ void deletarArvore(Node *raiz)
     }
 }
 
+void preOrder(Node *raiz)
+{
+    if(raiz != NULL)
+    {
+        printf("%s\n",raiz->info);
+        preOrder(raiz->esquerda);
+        preOrder(raiz->direita);
+    }
+}
+
 void inOrder(Node *raiz)
 {
     if(raiz != NULL)
@@ -82,8 +93,8 @@ void taNaArvore(Node *raiz,char info[STR_MAX], int *resposta)
 {
     if(raiz != NULL)
     {
+        printf("%s\t%s\n",raiz->info, info);
         int cmp = strcmp(raiz->info, info);
-        
         //procura na direita
         if(cmp < 0)
         {
