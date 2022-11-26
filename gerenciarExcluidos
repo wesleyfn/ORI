@@ -50,9 +50,7 @@ Node* criarNo(char info[STR_MAX])
     {
         buffer->info[a] = info[a];
     }
-    buffer->info[a] = '\0';
-
-    strcmp(buffer->info, info);
+    buffer->info[a+1] = '\0';
 
     buffer->esquerda = NULL;
     buffer->direita = NULL;
@@ -85,14 +83,16 @@ void taNaArvore(Node *raiz,char info[STR_MAX], int *resposta)
     if(raiz != NULL)
     {
         int cmp = strcmp(raiz->info, info);
-
+        
+        //procura na direita
         if(cmp < 0)
         {
            taNaArvore(raiz->direita, info, resposta);
         }
+        //procura na esquerda
         if(cmp > 0)
         {
-            taNaArvore(raiz->direita, info, resposta);
+            taNaArvore(raiz->esquerda, info, resposta);
         }
 
         if(cmp == 0)
