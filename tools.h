@@ -36,6 +36,9 @@ TNodeC* criarNodeC(char palavra[STR_MAX], int arquivo);
 TNodeC* inserirNodeC(TNodeC *raiz, char palavra[STR_MAX], int arquivo);
 void escreverNodeC(TNodeC *raiz, char* arquivoNome);
 void _escreve_(TNodeC *raiz, FILE *arquivo);
+TNodeC* _buscarPalavra_(TNodeC *raiz, char palavra[STR_MAX]);
+void buscarPalavra(TNodeC *raiz, TNodeC *achados[],int quantos,char *palavra[STR_MAX]);
+
 
 // Arvore das palavras desconsideradas
 void delArvoreDesconsideradas(TNodeD *raiz);
@@ -197,6 +200,35 @@ void delArvoreDesconsideradas(TNodeD *raiz)
         delArvoreDesconsideradas(raiz->esq);
         delArvoreDesconsideradas(raiz->dir);
         free(raiz);
+    }
+}
+
+TNodeC* _buscarPalavra_(TNodeC *raiz, char palavra[STR_MAX])
+{
+    if(raiz != NULL)
+    {
+        int cmp = strcmp(raiz->palavra, palavra);
+
+        //procura na direita
+        if(cmp < 0)
+            _buscarPalavra_(raiz->dir, palavra);
+        //procura na esquerda
+        else if(cmp > 0)
+            _buscarPalavra_(raiz->esq, palavra);
+        else if(!cmp)
+            return raiz;
+        else
+            return NULL;
+    }
+ 
+}
+
+void buscarPalavra(TNodeC *raiz, TNodeC *achados[],int quantos,char *palavra[STR_MAX])
+{
+    //registra os endereços de todos os nós que contém uma palavra no vetor "palavras"
+    for(int a = 0; a < quantos; ++a)
+    {
+        achados[a] = _buscarPalavra_(raiz, palavra[a]);
     }
 }
 
