@@ -1,6 +1,8 @@
 //fonte: https://codebrowser.dev/glibc/glibc/string/strtok_r.c.html
 
 #include <string.h>
+#ifndef STRTOK_H
+#define STRTOK_H
 char *strtok_r(char *restrict, const char *, char **);
 
 char *strtok_r(char * s, const char * delim, char ** save_ptr)
@@ -32,3 +34,4 @@ char *strtok_r(char * s, const char * delim, char ** save_ptr)
   *save_ptr = end + 1;
   return s;
 }
+#endif
