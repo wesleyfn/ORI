@@ -14,7 +14,6 @@ int main(int argc, const char **argv)
     TNodeC *treeConsideradas = NULL;
 
     // Variaveis auxiliares
-    char *palavra;
     char buffer[STR_MAX];
     int quantArq = 0, quantPalavras = 0;
 
@@ -29,7 +28,7 @@ int main(int argc, const char **argv)
 
         while (fscanf(fileABC, "%s", buffer) != EOF)
         {
-            palavra = strtok(buffer, ".,!? ");
+            char* palavra = strtok(buffer, ".,!? ");
             
             // Se a palavra não for encontrada na arvore das desconsideradas
             if(!naArvoreD(treeDesconsideradas, palavra))
@@ -48,7 +47,7 @@ int main(int argc, const char **argv)
     // Volta para o inicio do arquivo
     rewind(fConsulta);
 
-    // Guarda as palavras consultadas num vetor
+    // Guarda os nodes da arvore que possuem as palavras consultadas num vetor
     TNodeC *nodesConsultadas[quantPalavras];
     for (int i = 0; fscanf(fConsulta, "%s", buffer) != EOF; i++) {
         nodesConsultadas[i] = buscarPalavra(treeConsideradas, buffer);
