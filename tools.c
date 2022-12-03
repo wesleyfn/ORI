@@ -41,14 +41,13 @@ void gerarResposta(TNodeC **nodes, FILE *fConjunto, int n_palavras)
                 break;
             }
         }
-        
         // Imprime no arquivo resposta.txt se flag == 1, ou seja,
         // se a frequencia for != 0 em todos as palavras do arquivo
         if (flag == TRUE) {
             // i * strlen("a.txt")+1;
             fseek(fConjunto, i*6, SEEK_SET);
 
-            char str[20];
+            char str[STR_MAX];
             if(fscanf(fConjunto, "%s", str) != EOF)
                 fprintf(fRespostas, "%s\n", str);
             counter++;
