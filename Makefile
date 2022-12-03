@@ -13,6 +13,4 @@ data.o: tools.h tools.c
 clean: 
 	rm *.o 
 	rm *.exe
-	rm indice.txt
-	rm respostas.txt
 	
