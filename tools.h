@@ -6,7 +6,7 @@
 #endif 
 
 #ifndef QTD_ARQUIVOS
-#define QTD_ARQUIVOS 3 // Define quantos arquivos serão lidos
+#define QTD_ARQUIVOS 4 // Define quantos arquivos serão lidos
 #endif
 
 #define TRUE 1
