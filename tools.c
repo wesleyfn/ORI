@@ -87,7 +87,7 @@ void printArvoreC(TNodeC *raiz)
 
 TNodeC* criarNodeC(char *palavra, int arquivo)
 {
-    TNodeC *buffer = (TNodeC*) malloc(sizeof(TNodeC));
+    TNodeC *buffer = (TNodeC*) calloc(1, sizeof(TNodeC));
     if (buffer == NULL){
         puts("Erro de alocacao!");
         exit(-1);
@@ -173,7 +173,7 @@ TNodeD* inserirNodeD(TNodeD *raiz, char *palavra)
 
 TNodeD* criarNodeD(char *palavra)
 {
-    TNodeD *buffer = (TNodeD*) malloc(sizeof(TNodeD));
+    TNodeD *buffer = (TNodeD*) calloc(1, sizeof(TNodeD));
     if (buffer == NULL){
         puts("Erro de alocacao!");
         exit(-1);

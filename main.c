@@ -28,7 +28,7 @@ int main(int argc, const char **argv)
 
         while (fscanf(fileABC, "%s", buffer) != EOF)
         {
-            char* palavra = strtok(buffer, ".,!? ");
+            char *palavra = strtok(buffer, ".,!? ");
             
             // Se a palavra não for encontrada na arvore das desconsideradas
             if(!naArvoreD(treeDesconsideradas, palavra))
