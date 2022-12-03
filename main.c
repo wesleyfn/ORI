@@ -1,90 +1,67 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "tools.h"
 
-int main(void)
-{   
-    TNodeD *desconsiderados = NULL;
-    TNodeC *considerados = NULL;
+// make
+// ./main.exe conjunto.txt desconsideradas.txt consulta.txt
+int main(int argc, const char **argv)
+{
+    // Lendo os arquivos - nomes são passados como argumentos para main
+    FILE *fConjunto = fopen(argv[1], "r");
+    FILE *fDesconsideradas = fopen(argv[2], "r");
+    FILE *fConsulta = fopen(argv[3], "r");
 
-    //abre o arquivo de palavras a serem desconsideradas.
-    FILE *fDesconsiderados = fopen("desconsideradas.txt", "r"), *origem = NULL;
+    // Inicializando as raizes das arvores
+    TNodeD *treeDesconsideradas = NULL;
+    TNodeC *treeConsideradas = NULL;
 
-    //cria uma árvore com as palavras desconsideradas.
+    // Variaveis auxiliares
+    char *palavra;
     char buffer[STR_MAX];
-    fscanf(fDesconsiderados, "%s", buffer);
-    
+    int quantArq = 0, quantPalavras = 0;
 
-    desconsiderados = criarNodeD(buffer);
+    // Arvore desconsideradas
+    while(fscanf(fDesconsideradas, "%s\n", buffer) != EOF)
+        treeDesconsideradas = inserirNodeD(treeDesconsideradas, buffer);
 
-    while(fscanf(fDesconsiderados, "%s", buffer) != EOF)
+    // Arvore consideradas
+    while(fscanf(fConjunto, "%s", buffer) != EOF)
     {
-        inserirNodeD(desconsiderados, buffer);
+        FILE *fileABC = fopen(buffer, "r");
+
+        while (fscanf(fileABC, "%s", buffer) != EOF)
+        {
+            palavra = strtok(buffer, ".,!? ");
+            
+            // Se a palavra não for encontrada na arvore das desconsideradas
+            if(!naArvoreD(treeDesconsideradas, palavra))
+                treeConsideradas = inserirNodeC(treeConsideradas, palavra, quantArq);
+        }
+        quantArq++;
+        fclose(fileABC);
     }
 
-    //fecha o arquivo das desconsideradas.
-    fclose(fDesconsiderados);
+    // Escrevendo a treeConsideradas no arquivo indice.txt
+    gerarIndice(treeConsideradas);
 
-    origem = fopen("a.txt","r");
-    fscanf(origem, "%s", buffer);
-
-    considerados = criarNodeC(buffer, 0);
-
+    // Verifica quantas palavras há no arquivo
+    for ( ; fscanf(fConsulta, "%s", buffer) != EOF; quantPalavras++);
     
-    while(fscanf(origem, "%s", buffer) != EOF)
-    {
-        int naArvore = FALSE;
+    // Volta para o inicio do arquivo
+    rewind(fConsulta);
 
-        //se a palavra não for uma das excluidas, insere na árvore.
-        naArvore = taNaArvoreDesconsideradas(desconsiderados, buffer);
-        if(naArvore == FALSE)
-            inserirNodeC(considerados,buffer,0);
+    // Guarda as palavras consultadas num vetor
+    TNodeC *nodesConsultadas[quantPalavras];
+    for (int i = 0; fscanf(fConsulta, "%s", buffer) != EOF; i++) {
+        nodesConsultadas[i] = buscarPalavra(treeConsideradas, buffer);
     }
 
-    fclose(origem);
+    // Gerando o arquivo resposta.txt
+    gerarResposta(nodesConsultadas, fConjunto, quantPalavras);
 
-    //escreve o resultado final
-    escreverNodeC(considerados, "indice.txt");
-
-    //exclui as duas árvores
-    delArvoreDesconsideradas(desconsiderados);
-    delArvoreConsideradas(considerados);
-
-    FILE *file = fopen("consulta.txt", "r");
-    char str[STR_MAX];
-
-    fscanf(file, "%s", str);
-    fclose(file);
-
-    puts(str);
-
-    /*
-    TNode *casa = alocar(), *amor = alocar();
-    
-    FILE *fConjunto = fopen("conjunto.txt", "r+");
-
-    strcpy(casa->palavra, "casa");
-    casa->frequecia[0] = 1;
-    casa->frequecia[1] = 0;
-    casa->frequecia[2] = 1;
-
-    strcpy(amor->palavra, "amor");
-    amor->frequecia[0] = 1;
-    amor->frequecia[1] = 1;
-    amor->frequecia[2] = 1;
-
-
-    int qtd_palavras = 2;
-    int qtd_arquivos = 3;
-    TNode *palavras[qtd_palavras];
-
-    // A função de busca tem que retornar um ponteiro para a chave encontrada
-    palavras[0] = casa;
-    palavras[1] = amor;
-    palavras[2] = casa;
-
-    gerarResposta(palavras, fConjunto, qtd_arquivos, qtd_palavras);
-    
-    return 0;*/
+    // Liberando memória e fechando arquivos
+    fclose(fConjunto); 
+    fclose(fConsulta); 
+    fclose(fDesconsideradas);
+    delArvoreC(treeConsideradas); 
+    delArvoreD(treeDesconsideradas);
+    return 0;
 }

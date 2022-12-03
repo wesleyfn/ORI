@@ -1,25 +1,24 @@
 #ifndef INDICE_H_INCLUDED
 #define INDICE_H_INCLUDED
 
-#define TRUE 1
-#define FALSE 0
-
 #ifndef STR_MAX
-#define STR_MAX 50 //tamanho maximo da string
-#endif // STR_MAX
+#define STR_MAX 20 // Tamanho maximo das strings
+#endif 
 
 #ifndef QTD_ARQUIVOS
-#define QTD_ARQUIVOS 3 //define quantos arquivos serão lidos
-#endif // QTD_ARQUIVOS
+#define QTD_ARQUIVOS 3 // Define quantos arquivos serão lidos
+#endif
+
+#define TRUE 1
+#define FALSE 0
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "strtok_r.h" //strtok reentrante.
 
 typedef struct nodeConsideradas {
-    char palavra[STR_MAX]; //palavra lida
-    int frequencia[QTD_ARQUIVOS]; //vetor de frequênci. frequência[i] = frequência que a palavra aparece no arquivo i+1.
+    char palavra[STR_MAX]; 
+    int frequencia[QTD_ARQUIVOS]; // Vetor de frequencias. frequencia[i] = frequencia que a palavra aparece no arquivo i+1.
     struct nodeConsideradas *esq, *dir;
 } TNodeC;
 
@@ -28,331 +27,46 @@ typedef struct nodeDesconsideradas {
     struct nodeDesconsideradas *esq, *dir;
 } TNodeD;
 
-void gerarResposta(TNodeC **nodes, FILE *fConjunto, int n_arquivos, int n_palavras);
+// Gera o arquivo "resposta.txt"
+void gerarResposta(TNodeC **nodes, FILE *fConjunto, int n_palavras);
 
-// Arvore das palavras consideradas
-void delArvoreConsideradas(TNodeC *raiz);
-void inOrderConsideradas(TNodeC *raiz);
-TNodeC* criarNodeC(char palavra[STR_MAX], int arquivo);
-TNodeC* inserirNodeC(TNodeC *raiz, char palavra[STR_MAX], int arquivo);
-void escreverNodeC(TNodeC *raiz, char* arquivoNome);
-void _escreve_(TNodeC *raiz, FILE *arquivo);
-TNodeC* _buscarPalavra_(TNodeC *raiz, char palavra[STR_MAX]);
-void buscarPalavra(TNodeC *raiz, TNodeC *achados[],int quantos,char *palavra[STR_MAX]);
+// Gera o arquivo "indice.txt"
+void gerarIndice(TNodeC *raiz);
 
 
-// Arvore das palavras desconsideradas
-void delArvoreDesconsideradas(TNodeD *raiz);
-TNodeD* inserirNodeD(TNodeD *raiz, char palavra[STR_MAX]);
-TNodeD* criarNodeD(char palavra[STR_MAX]);
-void inOrderDesconsideradas(TNodeD *raiz);
-int taNaArvoreDesconsideradas(TNodeD *raiz, char palavra[STR_MAX]);
+/* ARVORE DAS PALAVRAS CONSIDERADAS */
 
-//leitura de árquivos
-void lerArquivosD(char arquivo_nome[], TNodeD ** raiz);
-void lerArquivosC(char arquivo_nome[], TNodeC ** raiz, int arquivo);
+// Libera a memoria utilizada pela arvore das consideradas
+void delArvoreC(TNodeC *raiz);
 
-void gerarResposta(TNodeC **nodes, FILE *fConjunto, int n_arquivos, int n_palavras) 
-{
-    FILE *fRespostas = fopen("respostas.txt", "w+");
-    int counter = 0;
+// Imprime a arvore das consideradas em ordem alfabetica
+void printArvoreC(TNodeC *raiz);
 
-    fprintf(fRespostas, "   \n");
-    for (int i = 0; i < n_arquivos; i++)
-    {
-        int flag = TRUE;
-        for (int j = 0; j < n_palavras; j++)
-        {
-            // Verifica se a frequencia a palavra é > 0
-            // se for 0 encerra o loop, pois não é necessaria a verificação
-            // das outras palavras já que a realação entre elas é AND.
-            if (nodes[j]->frequencia[i] == 0) {
-                flag = FALSE;
-                break;
-            }
-        }
-        
-        // Imprime no arquivo resposta.txt se flag == 1, ou seja,
-        // se a frequencia for != 0 em todos as palavras do arquivo
-        if (flag == TRUE) {
-            // i * strlen("a.txt")+1;
-            fseek(fConjunto, i*6, SEEK_SET);
+// Cria um novo node da arvore das consideradas
+TNodeC* criarNodeC(char *palavra, int arquivo);
 
-            char str[20];
-            fscanf(fConjunto, "%s", str);
-            fprintf(fRespostas, "%s\n", str);
-            counter++;
-        }
-    }
-    rewind(fRespostas);
-    fprintf(fRespostas, "%d", counter);
-    fclose(fRespostas);
-}
+// Insire um novo node na arvore das consideradas
+TNodeC* inserirNodeC(TNodeC *raiz, char *palavra, int arquivo);
 
-void delArvoreConsideradas(TNodeC *raiz)
-{
-    if(raiz != NULL) {
-        delArvoreConsideradas(raiz->esq);
-        delArvoreConsideradas(raiz->dir);
-        free(raiz);
-    }
-}
-/*
-void preOrderIndice(TNodeC *raiz)
-{
-    if(raiz != NULL)
-    {
-        printf("%s\n",raiz->palavra);
-        preOrderIndice(raiz->esq);
-        preOrderIndice(raiz->dir);
-    }
-}
-*/
-void inOrderConsideradas(TNodeC *raiz)
-{
-    if(raiz != NULL)
-    {
-        inOrderConsideradas(raiz->esq);
-
-        printf("%s: ",raiz->palavra);
-        for(int a = 0; a < QTD_ARQUIVOS; ++a) {
-            if(raiz->frequencia[a] != 0)
-                printf("%d,%d ",a+1,raiz->frequencia[a]);
-        }
-        printf("\n");
-
-        inOrderConsideradas(raiz->dir);
-    }
-}
-
-TNodeC* criarNodeC(char palavra[STR_MAX], int arquivo)
-{
-    TNodeC *buffer = (TNodeC*) malloc(sizeof(TNodeC));
-
-    for(int a = 0; a < QTD_ARQUIVOS; ++a)
-    {
-        buffer->frequencia[a] = 0;
-    }
-    strncpy(buffer->palavra,palavra,STR_MAX);
-
-    buffer->esq = NULL;
-    buffer->dir = NULL;
-
-    if(arquivo < QTD_ARQUIVOS)
-        buffer->frequencia[arquivo] = 1;
-
-    return buffer;
-}
-
-TNodeC* inserirNodeC(TNodeC *raiz, char palavra[STR_MAX], int arquivo)
-{
-    if(raiz == NULL)
-        return criarNodeC(palavra,arquivo);
-
-    int cmp = strcmp(raiz->palavra,palavra);
-
-    if(cmp > 0)
-    {
-        raiz->esq = inserirNodeC(raiz->esq, palavra,arquivo);
-    }
-    else if(cmp < 0)
-    {
-        raiz->dir = inserirNodeC(raiz->dir, palavra,arquivo);
-    }
-    else
-    {
-        raiz->frequencia[arquivo] += 1;
-    }
-
-    return raiz;
-}
-
-void escreverNodeC(TNodeC *raiz, char* arquivoNome)
-{
-    FILE *arquivo = fopen(arquivoNome,"w");
-
-    if(arquivo != NULL)
-    {
-        _escreve_(raiz,arquivo);
-        fclose(arquivo);
-    }
-}
-
-void _escreve_(TNodeC *raiz, FILE *arquivo)
-{
-    if(raiz != NULL)
-    {
-        _escreve_(raiz->esq, arquivo);
-
-        fprintf(arquivo,"%s: ",raiz->palavra);
-
-        for(int a = 0; a < QTD_ARQUIVOS; ++a)
-        {
-            if(raiz->frequencia[a] != 0)
-                fprintf(arquivo,"%d,%d ",a+1,raiz->frequencia[a]);
-        }
-        fprintf(arquivo,"\n");
-
-        _escreve_(raiz->dir,arquivo);
-    }
-}
+// Busca e retorna um node que possui a determinada palavra na arvore das consideradas
+TNodeC* buscarPalavra(TNodeC *raiz, char *palavra);
 
 
-void delArvoreDesconsideradas(TNodeD *raiz)
-{
-    if(raiz != NULL)
-    {
-        delArvoreDesconsideradas(raiz->esq);
-        delArvoreDesconsideradas(raiz->dir);
-        free(raiz);
-    }
-}
+/* ARVORE DAS PALAVRAS DESCONSIDERADAS */
 
-TNodeC* _buscarPalavra_(TNodeC *raiz, char palavra[STR_MAX])
-{
-    if(raiz != NULL)
-    {
-        int cmp = strcmp(raiz->palavra, palavra);
+// Libera a memoria utilizada pela arvore das desconsideradas
+void delArvoreD(TNodeD *raiz);
 
-        //procura na direita
-        if(cmp < 0)
-            _buscarPalavra_(raiz->dir, palavra);
-        //procura na esquerda
-        else if(cmp > 0)
-            _buscarPalavra_(raiz->esq, palavra);
-        else if(!cmp)
-            return raiz;
-        else
-            return NULL;
-    }
- 
-}
+// Imprime a arvore das desconsideradas em ordem alfabetica
+void printArvoreD(TNodeD *raiz);
 
-void buscarPalavra(TNodeC *raiz, TNodeC *achados[],int quantos,char *palavra[STR_MAX])
-{
-    //registra os endereços de todos os nós que contém uma palavra no vetor "palavras"
-    for(int a = 0; a < quantos; ++a)
-    {
-        achados[a] = _buscarPalavra_(raiz, palavra[a]);
-    }
-}
+// Cria um novo node da arvore das desconsideradas
+TNodeD* criarNodeD(char *palavra);
 
-TNodeD* inserirNodeD(TNodeD *raiz, char palavra[STR_MAX])
-{
-    if(raiz == NULL)
-        return criarNodeD(palavra);
+// Insire um novo node na arvore das desconsideradas
+TNodeD* inserirNodeD(TNodeD *raiz, char *palavra);
 
-    int cmp = strcmp(raiz->palavra, palavra);
+// Verifica se há determinada palavra na arvore das desconsideradas
+int naArvoreD(TNodeD *raiz, char *palavra);
 
-    if(cmp > 0)
-        raiz->esq = inserirNodeD(raiz->esq, palavra);
-    else if(cmp < 0)
-        raiz->dir = inserirNodeD(raiz->dir, palavra);
-
-    return raiz;
-}
-
-TNodeD* criarNodeD(char palavra[STR_MAX])
-{
-    TNodeD *buffer = (TNodeD*) malloc(sizeof(TNodeD));
-
-    strcpy(buffer->palavra, palavra);
-    buffer->esq = NULL;
-    buffer->dir = NULL;
-    return buffer;
-}
-
-void inOrderDesconsideradas(TNodeD *raiz)
-{
-    if(raiz != NULL)
-    {
-        inOrderDesconsideradas(raiz->esq);
-        printf("%s\n",raiz->palavra);
-        inOrderDesconsideradas(raiz->dir);
-    }
-}
-
-int taNaArvoreDesconsideradas(TNodeD *raiz, char palavra[STR_MAX])
-{
-    if(raiz != NULL)
-    {
-        int cmp = strcmp(raiz->palavra, palavra);
-
-        //procura na direita
-        if(cmp < 0)
-            taNaArvoreDesconsideradas(raiz->dir, palavra);
-        //procura na esquerda
-        else if(cmp > 0)
-            taNaArvoreDesconsideradas(raiz->esq, palavra);
-        else
-            return TRUE;
-    }
-}
-
-TNodeC* selecionarConsultadas(TNodeC* arvore) {
-    FILE *file = fopen("consulta.txt", "r");
-    char str[STR_MAX];
-
-    fscanf(file, "%s", str);
-
-
-    fclose(file);
-}
-
-void lerArquivosD(char arquivo_nome[], TNodeD ** raiz){
-
-    FILE *file;
-    file = fopen(arquivo_nome, "r");
-    char linha[STR_MAX], *rest = NULL;
-
-    const char *s = "\n !,.?";
-
-    rest = fgets(linha,STR_MAX,file);
-
-    char * token = NULL;
-    if(file == NULL){
-        printf("Nao foi possivel ler o arquivo %s\n", arquivo_nome);
-        exit(-1);
-    }
-    else{
-         token = strtok_r(rest, s, &rest);
-        *raiz = criarNodeD(token);
-        do{
-            while((token = strtok_r(rest, s, &rest))){
-                inserirNodeD(*raiz, token);
-            }
-            rest = fgets(linha, STR_MAX, file);
-        }while(rest != NULL);
-    }
-    fclose(file);
-}
-
-void lerArquivosC(char arquivo_nome[], TNodeC ** raiz, int arquivo){
-
-    FILE *file;
-    file = fopen(arquivo_nome, "r");
-    char linha[STR_MAX], *rest = NULL;
-
-    const char *s = "\n !,.?";
-
-    rest = fgets(linha,STR_MAX,file);
-
-    char * token = NULL;
-    if(file == NULL){
-        printf("Nao foi possivel ler o arquivo %s\n", arquivo_nome);
-        exit(-1);
-    }
-    else{
-         token = strtok_r(rest, s, &rest);
-        *raiz = criarNodeC(token,arquivo);
-        do{
-            while((token = strtok_r(rest, s, &rest))){
-                inserirNodeC(*raiz, token, arquivo);
-            }
-            rest = fgets(linha, STR_MAX, file);
-        }while(rest != NULL);
-    }
-    fclose(file);
-}
-
-#endif // INDICE_H_INCLUDED
+#endif 

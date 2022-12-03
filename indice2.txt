@@ -1,7 +1,0 @@
-casa: 1,1 
-engracada.: 1,1 
-era: 1,1 
-muito: 1,1 
-nada: 1,1 
-teto: 1,1 
-tinha: 1,2 
