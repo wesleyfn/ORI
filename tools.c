@@ -3,6 +3,16 @@
 // Funcao auxiliar, não está disponível para a main.c
 void gerarIndice_(TNodeC *raiz, FILE *arquivo);
 
+FILE* abrirArquivo(const char *diretorio, char *modo) {
+    FILE *file = fopen(diretorio, modo);
+    if (file == NULL) {
+        printf("[ERRO!]\n> Arquivo \"%s\" nao encontrado!\n", diretorio);
+        exit(-1);
+    }
+    else
+        return file;
+}
+
 TNodeC* buscarPalavra(TNodeC *raiz, char *palavra)
 {
     if(raiz != NULL)

@@ -33,6 +33,8 @@ void gerarResposta(TNodeC **nodes, FILE *fConjunto, int n_palavras);
 // Gera o arquivo "indice.txt"
 void gerarIndice(TNodeC *raiz);
 
+// fopen com um tratamento de erro
+FILE *abrirArquivo(const char *diretorio, char *modo);
 
 /* ARVORE DAS PALAVRAS CONSIDERADAS */
 
